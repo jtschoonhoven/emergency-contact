@@ -8,14 +8,14 @@ import { useRecordingsContext } from './RecordingsContext'
  * Root page for video recordings.
  */
 const Recordings: React.FC = () => {
-  const { recordingIndex, recordings } = useRecordingsContext()
+  const { recordings, currentRecording } = useRecordingsContext()
 
   const steps: StepNavStepProps[] = recordings.map((recording, idx) => ({
     index: idx,
     title: recording.title,
-    href: `/recordings/${idx}`,
-    isActive: idx == recordingIndex,
-    isCompleted: typeof recordingIndex !== 'undefined' ? idx < recordingIndex : false,
+    href: `/recordings/${recording.id}`,
+    isActive: recording.id === currentRecording?.id,
+    isCompleted: typeof currentRecording !== 'undefined' ? idx < currentRecording?.index : false,
   }))
 
   return (

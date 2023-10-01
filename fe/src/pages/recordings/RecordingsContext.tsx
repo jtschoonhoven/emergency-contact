@@ -3,35 +3,35 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 
 interface RecordingData {
+  id: string
+  index: number
   title: string
+  prompt: string
 }
 
 interface RecordedVideo {
-  index: number
+  recordingId: string
   mediaBlobUrl: string
 }
 
-type AddRecordedVideo = (item: { index: number; mediaBlobUrl: string }) => void
+type AddRecordedVideo = (item: RecordedVideo) => void
 
 interface RecordingsContextData {
   recordings: readonly RecordingData[]
-  recordingIndex: number | undefined
   currentRecording: RecordingData | undefined
   currentRecordedVideo: RecordedVideo | undefined
   recordedVideos: readonly RecordedVideo[]
   addRecordedVideo: AddRecordedVideo
 }
 
-export const RECORDINGS: RecordingData[] = [{ title: 'Hello, world!' }, { title: 'Hello, birds!' }]
-
-export const RecordingNotFoundError = new Response('Not Found', {
-  status: 404,
-  statusText: 'Not Found',
-})
+const _RECORDINGS: readonly Omit<RecordingData, 'index'>[] = [
+  { id: '1-hello', title: 'Hello, world!', prompt: 'Favorite color?' },
+  { id: '2-birds', title: 'Hello, birds!', prompt: 'Best food?' },
+]
+export const RECORDINGS: readonly RecordingData[] = _RECORDINGS.map((recording, index) => ({ index, ...recording }))
 
 const defaultRecordingsContext: RecordingsContextData = {
   recordings: RECORDINGS,
-  recordingIndex: undefined,
   currentRecording: undefined,
   currentRecordedVideo: undefined,
   recordedVideos: [],
@@ -47,36 +47,28 @@ export const useRecordingsContext = () => {
 
 export const RecordingsProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [recordedVideos, setRecordedVideos] = React.useState<readonly RecordedVideo[]>([])
-  const { recordingIndex: recordingIndexStr } = useParams()
-  let recordingIndex: number | undefined = undefined
+  const { recordingId } = useParams()
 
-  // Attempt to parse the recording index as a positive integer
-  if (typeof recordingIndexStr !== 'undefined') {
-    try {
-      recordingIndex = parseInt(recordingIndexStr, 10)
-    } catch (err) {
-      console.error('Recording index is not an integer')
-      throw RecordingNotFoundError
-    }
-    if (typeof recordingIndex !== 'number') {
-      console.error('Recording index is not a number')
-      throw RecordingNotFoundError
-    }
-    if (recordingIndex < 0 || recordingIndex >= RECORDINGS.length) {
-      console.error('Recording index out of bounds')
-      throw RecordingNotFoundError
-    }
+  // Throw 404 response if recordingId is invalid
+  const recordingIndex = RECORDINGS.findIndex((recording) => recordingId === recording.id)
+  if (recordingId && recordingIndex < 0) {
+    throw new Response(`No recording exists with ID "${recordingId}"`, {
+      status: 404,
+      statusText: 'Not Found',
+    })
   }
 
-  const addRecordedVideo: AddRecordedVideo = (item) => setRecordedVideos([...recordedVideos, item])
+  const addRecordedVideo: AddRecordedVideo = (newVideo) => {
+    const oldRecordedVideos = recordedVideos.filter((oldVideo) => oldVideo.recordingId !== newVideo.recordingId)
+    setRecordedVideos([...oldRecordedVideos, newVideo])
+  }
 
   const currentRecordedVideo = recordedVideos.find(
-    ({ index }) => index === recordingIndex && typeof recordingIndex !== 'undefined'
+    (recordedVideo) => recordedVideo.recordingId === recordingId && typeof recordingId !== 'undefined'
   )
 
   const context: RecordingsContextData = {
     recordings: RECORDINGS,
-    recordingIndex,
     currentRecording: typeof recordingIndex !== 'undefined' ? RECORDINGS[recordingIndex] : undefined,
     currentRecordedVideo,
     recordedVideos,

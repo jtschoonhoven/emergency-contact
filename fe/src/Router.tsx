@@ -19,7 +19,7 @@ const ROUTES = createBrowserRouter([
         errorElement: <RouteError />,
         children: [
           {
-            path: ':recordingIndex',
+            path: ':recordingId',
             element: <Recording />,
           },
         ],

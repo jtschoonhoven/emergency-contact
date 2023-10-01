@@ -1,10 +1,6 @@
 import React from 'react'
 import RecordingVideo from './RecordingVideo'
-import { RecordingNotFoundError, useRecordingsContext } from './RecordingsContext'
-
-export interface RecordingData {
-  title: string
-}
+import { useRecordingsContext } from './RecordingsContext'
 
 /**
  * A page to capture a single video recording.
@@ -14,7 +10,10 @@ const Recording: React.FC = () => {
 
   if (typeof currentRecording === 'undefined') {
     console.error('Recording is undefined')
-    throw RecordingNotFoundError
+    throw new Response('Recording not found.', {
+      status: 404,
+      statusText: 'Not Found',
+    })
   }
 
   return (
