@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react'
 
-const Navbar: React.FC = () => {
+const AppBar: React.FC = () => {
   return (
     <>
       <nav className="bg-gray-800">
@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default AppBar

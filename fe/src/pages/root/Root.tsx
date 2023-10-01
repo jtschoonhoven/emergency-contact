@@ -1,13 +1,14 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link, Outlet } from 'react-router-dom'
 
 const Root: React.FC = () => {
   return (
     <>
       <p>TODO: Root</p>
-      <Link to="/record">Go to /record</Link>
+      <Link to="/recordings">Go to /recordings</Link>
+      <Outlet />
     </>
-  );
-};
+  )
+}
 
-export default Root;
+export default Root

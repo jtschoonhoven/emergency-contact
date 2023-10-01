@@ -1,32 +1,35 @@
-import React from "react";
+import React from 'react'
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
-import Root from "./pages/root/Root";
-import Record from "./pages/record/Record";
-import RouteError from "./components/error/RouteError";
-import Recording from "./pages/record/Recording";
+import Recordings from './pages/recordings/Recordings'
+import RouteError from './components/error/RouteError'
+import Recording from './pages/recordings/Recording'
+import App from './App'
 
 const ROUTES = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />,
+    path: '/',
+    element: <App />,
     errorElement: <RouteError />,
-  },
-  {
-    path: "/record",
-    element: <Record />,
     children: [
       {
-        path: ":recordIndex",
-        element: <Recording />,
+        path: '/recordings',
+        element: <Recordings />,
+        errorElement: <RouteError />,
+        children: [
+          {
+            path: ':recordingIndex',
+            element: <Recording />,
+          },
+        ],
       },
     ],
   },
-]);
+])
 
 const Router: React.FC = () => {
-  return <RouterProvider router={ROUTES} />;
-};
+  return <RouterProvider router={ROUTES} />
+}
 
-export default Router;
+export default Router
